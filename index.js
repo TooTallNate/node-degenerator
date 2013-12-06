@@ -3,12 +3,9 @@
  * Module dependencies.
  */
 
+var types = require('ast-types');
 var esprima = require('esprima');
 var escodegen = require('escodegen');
-var types = require('ast-types');
-
-// load es6 definitions
-require('ast-types/def/es6');
 
 /**
  * Helper functions.
