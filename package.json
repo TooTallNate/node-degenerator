@@ -1,0 +1,16 @@
+{
+  "name": "degenerator",
+  "version": "0.0.0",
+  "description": "Turns sync functions into async generator functions",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
+  "license": "MIT",
+  "dependencies": {
+    "esprima": "git://github.com/ariya/esprima.git#harmony",
+    "escodegen": "~1.0.0",
+    "ast-types": "~0.3.11"
+  }
+}
