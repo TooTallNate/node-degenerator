@@ -19,7 +19,7 @@ function foo () {
 
 Gets compiled into:
 
-```
+``` js
 function* foo() {
     return (yield a('bar')) || (yield b());
 }
