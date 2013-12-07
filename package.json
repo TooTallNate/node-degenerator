@@ -4,7 +4,7 @@
   "description": "Turns sync functions into async generator functions",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --reporter spec test/test.js"
   },
   "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
   "license": "MIT",
@@ -12,5 +12,8 @@
     "esprima": "git://github.com/ariya/esprima.git#harmony",
     "escodegen": "~1.0.0",
     "ast-types": "~0.3.11"
+  },
+  "devDependencies": {
+    "mocha": "~1.15.1"
   }
 }
