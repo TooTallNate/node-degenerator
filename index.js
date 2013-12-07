@@ -49,8 +49,15 @@ function degenerator (fn, opts) {
       // we need to inject a `YieldExpression`
       var name = this.name;
       var parent = this.parent.node;
+
       var delegate = false;
-      parent[name] = b.yieldExpression(node, delegate);
+      var expr = b.yieldExpression(node, delegate);
+      if (parent['arguments']) {
+        // parent is a `CallExpression` type
+        parent['arguments'][name] = expr;
+      } else {
+        parent[name] = expr;
+      }
     }
 
     //console.error(JSON.stringify(node, null, 2));
