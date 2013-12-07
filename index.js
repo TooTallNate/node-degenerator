@@ -44,7 +44,7 @@ function degenerator (fn, opts) {
       // convert it into a "generator function"
       node.generator = true;
 
-    } else if (n.CallExpression.check(node)) {
+    } else if (n.CallExpression.check(node) && checkNames(node, names)) {
       // a "function invocation" expression,
       // we need to inject a `YieldExpression`
       var name = this.name;
@@ -64,4 +64,36 @@ function degenerator (fn, opts) {
     //console.error('\n');
   });
   return escodegen.generate(ast);
+}
+
+/**
+ * Returns `true` if `node` has a matching name to one of the entries in the
+ * `names` array
+ */
+
+function checkNames (node, names) {
+  var name;
+  var callee = node.callee;
+  if ('Identifier' == callee.type) {
+    name = callee.name;
+  } else if ('MemberExpression' == callee.type) {
+    name = callee.object.name + '.' + (callee.property.name || callee.property.raw);
+  } else {
+    throw new Error('don\'t know how to get type for: ' + callee.type);
+  }
+  console.error(name);
+
+  // now that we have the `name`, check if any entries match in the `names` array
+  var n;
+  for (var i = 0; i < names.length; i++) {
+    n = names[i];
+    if (n.test) {
+      // regexp
+      if (n.test(name)) return true;
+    } else {
+      if (name == n) return true;
+    }
+  }
+
+  return false;
 }
