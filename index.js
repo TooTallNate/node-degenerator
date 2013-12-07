@@ -81,7 +81,7 @@ function checkNames (node, names) {
   } else {
     throw new Error('don\'t know how to get type for: ' + callee.type);
   }
-  console.error(name);
+  //console.error(name);
 
   // now that we have the `name`, check if any entries match in the `names` array
   var n;
