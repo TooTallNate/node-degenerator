@@ -51,7 +51,7 @@ and HTTP request and returned the response body.
 The user has provided us with this implementation:
 
 ``` js
-function () {
+function myFn () {
   var one = get('https://google.com');
   var two = get('http://nodejs.org');
   var three = JSON.parse(get('http://jsonip.org'));
@@ -65,6 +65,7 @@ instance with the `vm` module:
 
 
 ``` js
+var co = require('co');
 var vm = require('vm');
 var degenerate = require('degenerate');
 
@@ -87,11 +88,19 @@ function get (endpoint) {
 // convert the JavaScript string provided from the user (assumed to be `str` var)
 str = degenerate(str, [ 'get' ]);
 
-var fn = vm.runInNewContext('(' + str + ')', {
-  get: get
-});
+// at this stage, you could use a transpiler like `facebook/regenerator`
+// here if desired.
 
-console.log(fn);
+// turn the JS String into a real GeneratorFunction instance
+var genFn = vm.runInNewContext('(' + str + ')', { get: get });
+
+// use `visionmedia/co` to create an async function from the generator function
+var asnycFn = co(genFn);
+
+// NOW USE IT!!!
+asyncFn(function (err, res) {
+  // ...
+});
 ```
 
 
