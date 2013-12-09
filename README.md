@@ -5,7 +5,7 @@ degenerator
 
 Sometimes you need to write sync looking code that's really async under the hood.
 This module takes a String to one or more synchronous JavaScript functions, and
-returns a new String that with those JS functions transpiled into an ES6 Generator
+returns a new String that with those JS functions transpiled into ES6 Generator
 Functions.
 
 So this:
