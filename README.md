@@ -66,7 +66,7 @@ instance with the `vm` module:
 ``` js
 var co = require('co');
 var vm = require('vm');
-var degenerate = require('degenerate');
+var degenerator = require('degenerator');
 
 // the `get()` function is thunk-based (error handling omitted for brevity)
 function get (endpoint) {
@@ -85,7 +85,7 @@ function get (endpoint) {
 }
 
 // convert the JavaScript string provided from the user (assumed to be `str` var)
-str = degenerate(str, [ 'get' ]);
+str = degenerator(str, [ 'get' ]);
 
 // at this stage, you could use a transpiler like `facebook/regenerator`
 // here if desired.
