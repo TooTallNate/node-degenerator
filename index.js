@@ -21,8 +21,11 @@ var b = types.builders;
 module.exports = degenerator;
 
 /**
- * Turns a sync JavaScript function into an async Generator Function.
+ * Turns sync JavaScript code into an JavaScript with async Generator Functions.
  *
+ * @param {String} jsStr JavaScript string to convert
+ * @param {Array} names Array of function names to add `yield` operators to
+ * @return {String} Converted JavaScript string with Generator functions injected
  * @api public
  */
 
