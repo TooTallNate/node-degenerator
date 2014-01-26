@@ -26,17 +26,12 @@ module.exports = degenerator;
  * @api public
  */
 
-function degenerator (fn, opts) {
-  var names;
-  if (opts) {
-    if (Array.isArray(opts)) names = opts;
-    else if (Array.isArray(opts.names)) names = opts.names;
-  }
+function degenerator (jsStr, names) {
   if (!Array.isArray(names)) {
     throw new TypeError('an array of async function "names" is required');
   }
 
-  var ast = esprima.parse(fn);
+  var ast = esprima.parse(jsStr);
   types.traverse(ast, function (node) {
 
     if (n.Function.check(node)) {
