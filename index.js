@@ -75,7 +75,7 @@ function checkNames (node, names) {
   } else if ('MemberExpression' == callee.type) {
     name = callee.object.name + '.' + (callee.property.name || callee.property.raw);
   } else {
-    throw new Error('don\'t know how to get type for: ' + callee.type);
+    throw new Error('don\'t know how to get name for: ' + callee.type);
   }
 
   // now that we have the `name`, check if any entries match in the `names` array
