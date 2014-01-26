@@ -58,8 +58,6 @@ function degenerator (jsStr, names) {
       }
     }
 
-    //console.error(JSON.stringify(node, null, 2));
-    //console.error('\n');
   });
   return escodegen.generate(ast);
 }
@@ -79,7 +77,6 @@ function checkNames (node, names) {
   } else {
     throw new Error('don\'t know how to get type for: ' + callee.type);
   }
-  //console.error(name);
 
   // now that we have the `name`, check if any entries match in the `names` array
   var n;
