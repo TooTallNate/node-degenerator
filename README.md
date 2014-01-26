@@ -93,7 +93,9 @@ str = degenerator(str, [ 'get' ]);
 // turn the JS String into a real GeneratorFunction instance
 var genFn = vm.runInNewContext('(' + str + ')', { get: get });
 
-// use `visionmedia/co` to create an async function from the generator function
+// use a generator-based flow control library (`visionmedia/co`, `jmar777/suspend`,
+etc.) to create an async function from the generator function.
+
 var asnycFn = co(genFn);
 
 // NOW USE IT!!!
