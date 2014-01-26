@@ -64,7 +64,12 @@ function degenerator (jsStr, names) {
 
 /**
  * Returns `true` if `node` has a matching name to one of the entries in the
- * `names` array
+ * `names` array.
+ *
+ * @param {types.Node} node
+ * @param {Array} names Array of function names to return true for
+ * @return {Boolean}
+ * @api private
  */
 
 function checkNames (node, names) {
