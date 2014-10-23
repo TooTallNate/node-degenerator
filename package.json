@@ -18,6 +18,6 @@
     "ast-types": "~0.3.22"
   },
   "devDependencies": {
-    "mocha": "~1.18.2"
+    "mocha": "~2.0.1"
   }
 }
