@@ -1,7 +1,7 @@
 // FindProxyForURL, isInNet
 function FindProxyForURL(url, host) {
     if (isHostInAnySubnet(host, ['10.1.2.0', '10.1.3.0'], '255.255.255.0')) {
-        return "HTTPS proxy.example.com"; 
+        return "HTTPS proxy.example.com";
     }
 
     if (isHostInAnySubnet(host, ['10.2.2.0', '10.2.3.0'], '255.255.255.0')) {
