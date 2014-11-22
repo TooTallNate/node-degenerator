@@ -1,6 +1,6 @@
 {
   "name": "degenerator",
-  "version": "0.0.4",
+  "version": "1.0.0",
   "description": "Turns sync functions into async generator functions",
   "main": "index.js",
   "scripts": {
