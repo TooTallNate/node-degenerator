@@ -43,34 +43,40 @@ function degenerator (jsStr, names) {
   // first pass is to find the `function` nodes and turn them into `function *`
   // generator functions. We also add the names of the functions to the `names`
   // array
-  types.traverse(ast, function (node) {
-    if (n.Function.check(node)) {
+  types.visit(ast, {
+    visitFunction: function(path) {
       // got a "function" expression/statement,
       // convert it into a "generator function"
-      node.generator = true;
+      path.node.generator = true;
 
       // add function name to `names` array
-      names.push(node.id.name);
+      names.push(path.node.id.name);
+
+      this.traverse(path);
     }
   });
 
   // second pass is for adding `yield` statements to any function
   // invokations that match the given `names` array.
-  types.traverse(ast, function (node) {
-    if (n.CallExpression.check(node) && checkNames(node, names)) {
-      // a "function invocation" expression,
-      // we need to inject a `YieldExpression`
-      var name = this.name;
-      var parent = this.parent.node;
+  types.visit(ast, {
+    visitCallExpression: function(path) {
+      if (checkNames(path.node, names)) {
+        // a "function invocation" expression,
+        // we need to inject a `YieldExpression`
+        var name = path.name;
+        var parent = path.parent.node;
 
-      var delegate = false;
-      var expr = b.yieldExpression(node, delegate);
-      if (parent['arguments']) {
-        // parent is a `CallExpression` type
-        parent['arguments'][name] = expr;
-      } else {
-        parent[name] = expr;
+        var delegate = false;
+        var expr = b.yieldExpression(path.node, delegate);
+        if (parent['arguments']) {
+          // parent is a `CallExpression` type
+          parent['arguments'][name] = expr;
+        } else {
+          parent[name] = expr;
+        }
       }
+
+      this.traverse(path);
     }
   });
 
