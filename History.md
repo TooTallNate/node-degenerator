@@ -1,4 +1,11 @@
 
+1.0.3 / 2016-06-22
+==================
+
+  * travis: test node v0.12, v4, iojs v1, v2, v3, v5, and v6
+  * package: loosen restriction on deps
+  * package: update to use newer ast-types (#8, @piotr1212)
+
 1.0.2 / 2015-06-22
 ==================
 
