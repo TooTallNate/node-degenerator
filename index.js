@@ -40,24 +40,27 @@ function degenerator (jsStr, names) {
   // array
   names = names.slice(0);
 
+
   // first pass is to find the `function` nodes and turn them into `function *`
   // generator functions. We also add the names of the functions to the `names`
   // array
   types.visit(ast, {
     visitFunction: function(path) {
-      // got a "function" expression/statement,
-      // convert it into a "generator function"
-      path.node.generator = true;
+      if (path.node.id) {
+        // got a "function" expression/statement,
+        // convert it into a "generator function"
+        path.node.generator = true;
 
-      // add function name to `names` array
-      names.push(path.node.id.name);
+        // add function name to `names` array
+        names.push(path.node.id.name);
+      }
 
       this.traverse(path);
     }
   });
 
   // second pass is for adding `yield` statements to any function
-  // invokations that match the given `names` array.
+  // invocations that match the given `names` array.
   types.visit(ast, {
     visitCallExpression: function(path) {
       if (checkNames(path.node, names)) {
@@ -100,6 +103,12 @@ function checkNames (node, names) {
     name = callee.name;
   } else if ('MemberExpression' == callee.type) {
     name = callee.object.name + '.' + (callee.property.name || callee.property.raw);
+  } else if ('FunctionExpression' == callee.type) {
+    if (callee.id) {
+      name = callee.id.name;
+    } else {
+      return false;
+    }
   } else {
     throw new Error('don\'t know how to get name for: ' + callee.type);
   }
