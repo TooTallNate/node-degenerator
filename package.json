@@ -13,11 +13,11 @@
   },
   "license": "MIT",
   "dependencies": {
-    "esprima": "2.x.x",
+    "esprima": "3.x.x",
     "escodegen": "1.x.x",
     "ast-types": "0.x.x"
   },
   "devDependencies": {
-    "mocha": "~2.0.1"
+    "mocha": "3.x.x"
   }
 }
