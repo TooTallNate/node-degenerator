@@ -1,3 +1,9 @@
+1.0.4 / 2016-06-22
+==================
+
+* [[`a72ad259af`](https://github.com/TooTallNate/degenerator/commit/a72ad259af)] - rename History.md to CHANGELOG.md (Nathan Rajlich)
+* [[`eadfa34af3`](https://github.com/TooTallNate/degenerator/commit/eadfa34af3)] - don't turn anonymous functions into generators (Nathan Rajlich)
+* [[`285af6ba6c`](https://github.com/TooTallNate/degenerator/commit/285af6ba6c)] - update deps (Nathan Rajlich)
 
 1.0.3 / 2016-06-22
 ==================
