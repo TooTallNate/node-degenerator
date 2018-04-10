@@ -46,13 +46,13 @@ function degenerator (jsStr, names) {
   // function in `names`. We also add the names of the functions to the `names` array.
   // We'll iterate several time, as every iteration might add new items to the `names` 
   // array, until no new names we're added in the iteration.
-  let lastNamesLength = 0;
+  var lastNamesLength = 0;
   do {
     lastNamesLength = names.length;
     types.visit(ast, {
       visitFunction: function (path) {
         if (path.node.id) {
-          let shouldDegenerate = false;
+          var shouldDegenerate = false;
           types.visit(path.node, {
             visitCallExpression: function (path) {
               if (checkNames(path.node, names)) {
