@@ -42,22 +42,42 @@ function degenerator (jsStr, names) {
 
 
   // first pass is to find the `function` nodes and turn them into `function *`
-  // generator functions. We also add the names of the functions to the `names`
-  // array
-  types.visit(ast, {
-    visitFunction: function(path) {
-      if (path.node.id) {
-        // got a "function" expression/statement,
-        // convert it into a "generator function"
-        path.node.generator = true;
+  // generator functions only if their body includes CallExpressions to 
+  // function in `names`. We also add the names of the functions to the `names` array.
+  // We'll iterate several time, as every iteration might add new items to the `names` 
+  // array, until no new names we're added in the iteration.
+  let lastNamesLength = 0;
+  do {
+    lastNamesLength = names.length;
+    types.visit(ast, {
+      visitFunction: function (path) {
+        if (path.node.id) {
+          let shouldDegenerate = false;
+          types.visit(path.node, {
+            visitCallExpression: function (path) {
+              if (checkNames(path.node, names)) {
+                shouldDegenerate = true;
+              }
+              return false;
+            }
+          });
+          if (!shouldDegenerate) {
+            return false;
+          }
+          // got a "function" expression/statement,
+          // convert it into a "generator function"
+          path.node.generator = true;
 
-        // add function name to `names` array
-        names.push(path.node.id.name);
+          // add function name to `names` array
+          if (!names.includes(path.node.id.name)) {
+            names.push(path.node.id.name);
+          }
+        }
+
+        this.traverse(path);
       }
-
-      this.traverse(path);
-    }
-  });
+    });
+  } while (lastNamesLength != names.length);
 
   // second pass is for adding `yield` statements to any function
   // invocations that match the given `names` array.
