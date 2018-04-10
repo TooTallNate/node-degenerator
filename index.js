@@ -69,7 +69,7 @@ function degenerator (jsStr, names) {
           path.node.generator = true;
 
           // add function name to `names` array
-          if (!names.includes(path.node.id.name)) {
+          if (names.indexOf(path.node.id.name) === -1) {
             names.push(path.node.id.name);
           }
         }
