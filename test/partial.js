@@ -11,6 +11,6 @@ function baz () {
   return bar();
 }
 
-function shouldChange () {
+function shouldntChange () {
   return 42;
 }

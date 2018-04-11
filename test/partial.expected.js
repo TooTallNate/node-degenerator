@@ -7,6 +7,6 @@ function* bar() {
 function* baz() {
     return yield bar();
 }
-function shouldChange() {
+function shouldntChange() {
     return 42;
 }

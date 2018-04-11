@@ -50,6 +50,37 @@ function degenerator (jsStr, names) {
   do {
     lastNamesLength = names.length;
     types.visit(ast, {
+      visitVariableDeclaration: function (path) {
+        if (path.node.declarations) {
+          for (var i = 0; i < path.node.declarations.length; i++) {
+            var declaration = path.node.declarations[i];
+            if (
+              declaration.init &&
+              declaration.id &&
+              'Identifier' == declaration.init.type &&
+              'Identifier' == declaration.id.type &&
+              checkName(declaration.init.name, names) &&
+              !checkName(declaration.id.name, names)
+            ) {
+              names.push(declaration.id.name);
+            }
+          }
+        }
+        return false;
+      },
+      visitAssignmentExpression: function (path) {
+        if (
+          path.node.left &&
+          path.node.right &&
+          'Identifier' == path.node.left.type &&
+          'Identifier' == path.node.right.type &&
+          checkName(path.node.right.name, names) &&
+          !checkName(path.node.left.name, names)
+        ) {
+          names.push(path.node.left.name);
+        }
+        return false;
+      },
       visitFunction: function (path) {
         if (path.node.id) {
           var shouldDegenerate = false;
@@ -69,7 +100,7 @@ function degenerator (jsStr, names) {
           path.node.generator = true;
 
           // add function name to `names` array
-          if (names.indexOf(path.node.id.name) === -1) {
+          if (!checkName(path.node.id.name, names)) {
             names.push(path.node.id.name);
           }
         }
@@ -132,7 +163,10 @@ function checkNames (node, names) {
   } else {
     throw new Error('don\'t know how to get name for: ' + callee.type);
   }
+  return checkName(name, names);
+}
 
+function checkName(name, names) {
   // now that we have the `name`, check if any entries match in the `names` array
   var n;
   for (var i = 0; i < names.length; i++) {
@@ -144,6 +178,5 @@ function checkNames (node, names) {
       if (name == n) return true;
     }
   }
-
   return false;
 }
