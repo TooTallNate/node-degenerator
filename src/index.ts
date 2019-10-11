@@ -1,3 +1,4 @@
+import { isRegExp } from 'util';
 import { generate } from 'escodegen';
 import { parseScript } from 'esprima';
 import { visit, namedTypes as n, builders as b } from 'ast-types';
@@ -111,10 +112,6 @@ function degenerator(jsStr: string, _names: Name[]): string {
 	});
 
 	return generate(ast);
-}
-
-function isRegExp(t: any): t is RegExp {
-	return typeof t.test === 'function';
 }
 
 /**
