@@ -32,7 +32,10 @@ describe('degenerator()', () => {
 				}
 
 				const compiled = degenerator(js, names);
-				assert.equal(compiled.trim().replace(/\r/g, ''), expected.trim());
+				assert.equal(
+					compiled.trim().replace(/\r/g, ''),
+					expected.trim().replace(/\r/g, '')
+				);
 			});
 		});
 	});
