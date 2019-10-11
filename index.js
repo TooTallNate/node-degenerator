@@ -42,22 +42,73 @@ function degenerator (jsStr, names) {
 
 
   // first pass is to find the `function` nodes and turn them into `function *`
-  // generator functions. We also add the names of the functions to the `names`
-  // array
-  types.visit(ast, {
-    visitFunction: function(path) {
-      if (path.node.id) {
-        // got a "function" expression/statement,
-        // convert it into a "generator function"
-        path.node.generator = true;
+  // generator functions only if their body includes CallExpressions to 
+  // function in `names`. We also add the names of the functions to the `names` array.
+  // We'll iterate several time, as every iteration might add new items to the `names` 
+  // array, until no new names we're added in the iteration.
+  var lastNamesLength = 0;
+  do {
+    lastNamesLength = names.length;
+    types.visit(ast, {
+      visitVariableDeclaration: function (path) {
+        if (path.node.declarations) {
+          for (var i = 0; i < path.node.declarations.length; i++) {
+            var declaration = path.node.declarations[i];
+            if (
+              declaration.init &&
+              declaration.id &&
+              'Identifier' == declaration.init.type &&
+              'Identifier' == declaration.id.type &&
+              checkName(declaration.init.name, names) &&
+              !checkName(declaration.id.name, names)
+            ) {
+              names.push(declaration.id.name);
+            }
+          }
+        }
+        return false;
+      },
+      visitAssignmentExpression: function (path) {
+        if (
+          path.node.left &&
+          path.node.right &&
+          'Identifier' == path.node.left.type &&
+          'Identifier' == path.node.right.type &&
+          checkName(path.node.right.name, names) &&
+          !checkName(path.node.left.name, names)
+        ) {
+          names.push(path.node.left.name);
+        }
+        return false;
+      },
+      visitFunction: function (path) {
+        if (path.node.id) {
+          var shouldDegenerate = false;
+          types.visit(path.node, {
+            visitCallExpression: function (path) {
+              if (checkNames(path.node, names)) {
+                shouldDegenerate = true;
+              }
+              return false;
+            }
+          });
+          if (!shouldDegenerate) {
+            return false;
+          }
+          // got a "function" expression/statement,
+          // convert it into a "generator function"
+          path.node.generator = true;
 
-        // add function name to `names` array
-        names.push(path.node.id.name);
+          // add function name to `names` array
+          if (!checkName(path.node.id.name, names)) {
+            names.push(path.node.id.name);
+          }
+        }
+
+        this.traverse(path);
       }
-
-      this.traverse(path);
-    }
-  });
+    });
+  } while (lastNamesLength != names.length);
 
   // second pass is for adding `yield` statements to any function
   // invocations that match the given `names` array.
@@ -112,7 +163,10 @@ function checkNames (node, names) {
   } else {
     throw new Error('don\'t know how to get name for: ' + callee.type);
   }
+  return checkName(name, names);
+}
 
+function checkName(name, names) {
   // now that we have the `name`, check if any entries match in the `names` array
   var n;
   for (var i = 0; i < names.length; i++) {
@@ -124,6 +178,5 @@ function checkNames (node, names) {
       if (name == n) return true;
     }
   }
-
   return false;
 }
