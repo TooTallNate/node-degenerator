@@ -18,11 +18,10 @@ function degenerator(jsStr: string, _names: Name[]): string {
 		throw new TypeError('an array of async function "names" is required');
 	}
 
-	const ast = parseScript(jsStr);
-
-	// duplicate the `names` array since it's rude to augment the user-provided
-	// array
+	// duplicate the `names` array since it's rude to augment the user args
 	const names = _names.slice(0);
+
+	const ast = parseScript(jsStr);
 
 	// first pass is to find the `function` nodes and turn them into `function *`
 	// generator functions only if their body includes CallExpressions to
@@ -131,11 +130,8 @@ function isRegExp(t: any): t is RegExp {
  * @api private
  */
 
-function checkNames(
-	{ callee }: ReturnType<typeof b.callExpression>,
-	names: Name[]
-): boolean {
-	let name;
+function checkNames({ callee }: n.CallExpression, names: Name[]): boolean {
+	let name: string;
 	if (n.Identifier.check(callee)) {
 		name = callee.name;
 	} else if (n.MemberExpression.check(callee)) {
