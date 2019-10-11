@@ -20,6 +20,9 @@
     "type": "git",
     "url": "git://github.com/TooTallNate/node-degenerator.git"
   },
+  "engines": {
+    "node": ">= 6"
+  },
   "license": "MIT",
   "dependencies": {
     "ast-types": "^0.13.2",

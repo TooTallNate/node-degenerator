@@ -96,16 +96,13 @@ function degenerator(jsStr: string, _names: Name[]): string {
 			if (checkNames(path.node, names)) {
 				// a "function invocation" expression,
 				// we need to inject a `YieldExpression`
-				let name = path.name;
-				let parent = path.parent.node;
-
-				let delegate = false;
-				let expr = b.yieldExpression(path.node, delegate);
-				if (parent.arguments) {
-					// parent is a `CallExpression` type
-					parent.arguments[name] = expr;
+				const delegate = false;
+				const { name, parent: { node: pNode } } = path;
+				const expr = b.yieldExpression(path.node, delegate);
+				if (n.CallExpression.check(pNode)) {
+					pNode.arguments[name] = expr;
 				} else {
-					parent[name] = expr;
+					pNode[name] = expr;
 				}
 			}
 
