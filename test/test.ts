@@ -8,7 +8,7 @@ describe('degenerator()', () => {
 		fs.readdirSync(__dirname).forEach(n => {
 			if (n === 'test.js') return;
 			if (/\.expected\.js$/.test(n)) return;
-			if (/\.d\.ts$/.test(n)) return;
+			if (/\.ts$/.test(n)) return;
 			if (/\.map/.test(n)) return;
 
 			const expectedName = `${path.basename(n, '.js')}.expected.js`;
