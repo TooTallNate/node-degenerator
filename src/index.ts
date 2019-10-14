@@ -77,6 +77,7 @@ function degenerator(jsStr: string, _names: Name[]): string {
 					}
 					// got a "function" expression/statement,
 					// convert it into a "generator function"
+					//path.node.async = true;
 					path.node.generator = true;
 
 					// add function name to `names` array
@@ -100,6 +101,7 @@ function degenerator(jsStr: string, _names: Name[]): string {
 				const delegate = false;
 				const { name, parent: { node: pNode } } = path;
 				const expr = b.yieldExpression(path.node, delegate);
+				//const expr = b.awaitExpression(path.node, delegate);
 				if (n.CallExpression.check(pNode)) {
 					pNode.arguments[name] = expr;
 				} else {

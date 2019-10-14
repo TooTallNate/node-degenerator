@@ -5,7 +5,7 @@ import degenerator from '../src';
 
 describe('degenerator()', () => {
 	describe('"expected" fixture tests', () => {
-		fs.readdirSync(__dirname).forEach(n => {
+		fs.readdirSync(__dirname).sort().forEach(n => {
 			if (n === 'test.js') return;
 			if (/\.expected\.js$/.test(n)) return;
 			if (/\.ts$/.test(n)) return;
