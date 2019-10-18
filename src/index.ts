@@ -165,7 +165,7 @@ namespace degenerator {
 		);
 		if (typeof fn !== 'function') {
 			throw new Error(
-				`Expected a function to be returned, but got ${typeof fn}`
+				`Expected a "function" to be returned for \`${returnName}\`, but got "${typeof fn}"`
 			);
 		}
 		if (isAsyncFunction(fn)) {

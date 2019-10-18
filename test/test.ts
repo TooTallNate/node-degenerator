@@ -159,7 +159,7 @@ describe('degenerator()', () => {
 			assert(err);
 			assert.equal(
 				err.message,
-				'Expected a function to be returned, but got number'
+				'Expected a "function" to be returned for `foo`, but got "number"'
 			);
 		});
 	});
