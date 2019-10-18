@@ -4,6 +4,52 @@ import assert from 'assert';
 import degenerator from '../src';
 
 describe('degenerator()', () => {
+	describe('"async" output', () => {
+		it('should support "async" output functions', () => {
+			function aPlusB(a: () => string, b: () => string): string {
+				return a() + b();
+			}
+			const compiled = degenerator('' + aPlusB, ['a'], {
+				output: 'async'
+			});
+			assert.equal(
+				compiled.replace(/\s+/g, ' '),
+				'async function aPlusB(a, b) { return await a() + b(); }'
+			);
+		});
+		it('should be the default "output" mode (with options)', () => {
+			function foo(a: () => string): string { return a(); }
+			const compiled = degenerator('' + foo, ['a'], {});
+			assert.equal(
+				compiled.replace(/\s+/g, ' '),
+				'async function foo(a) { return await a(); }'
+			);
+		});
+		it('should be the default "output" mode (without options)', () => {
+			function foo(a: () => string): string { return a(); }
+			const compiled = degenerator('' + foo, ['a']);
+			assert.equal(
+				compiled.replace(/\s+/g, ' '),
+				'async function foo(a) { return await a(); }'
+			);
+		});
+	});
+
+	describe('"generator" output', () => {
+		it('should support "generator" output functions', () => {
+			function aPlusB(a: () => string, b: () => string): string {
+				return a() + b();
+			}
+			const compiled = degenerator('' + aPlusB, ['a'], {
+				output: 'generator'
+			});
+			assert.equal(
+				compiled.replace(/\s+/g, ' '),
+				'function* aPlusB(a, b) { return (yield a()) + b(); }'
+			);
+		});
+	});
+
 	describe('"expected" fixture tests', () => {
 		fs.readdirSync(__dirname)
 			.sort()
@@ -42,20 +88,5 @@ describe('degenerator()', () => {
 					);
 				});
 			});
-	});
-
-	describe('"async" output', () => {
-		it('should support "async" output functions', () => {
-			function aPlusB(a: () => string, b: () => string): string {
-				return a() + b();
-			}
-			const compiled = degenerator('' + aPlusB, ['a'], {
-				output: 'async'
-			});
-			assert.equal(
-				compiled.replace(/\s+/g, ' '),
-				'async function aPlusB(a, b) { return await a() + b(); }'
-			);
-		});
 	});
 });

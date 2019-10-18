@@ -15,7 +15,7 @@ import { visit, namedTypes as n, builders as b } from 'ast-types';
 function degenerator(
 	jsStr: string,
 	_names: degenerator.DegeneratorNames,
-	options: degenerator.DegeneratorOptions = { output: 'async' }
+	{ output = 'async' }: degenerator.DegeneratorOptions = {}
 ): string {
 	if (!Array.isArray(_names)) {
 		throw new TypeError('an array of async function "names" is required');
@@ -81,9 +81,9 @@ function degenerator(
 
 					// Got a "function" expression/statement,
 					// convert it into an async or generator function
-					if (options.output === 'async') {
+					if (output === 'async') {
 						path.node.async = true;
-					} else if (options.output === 'generator') {
+					} else if (output === 'generator') {
 						path.node.generator = true;
 					}
 
@@ -112,9 +112,9 @@ function degenerator(
 				} = path;
 
 				let expr;
-				if (options.output === 'async') {
+				if (output === 'async') {
 					expr = b.awaitExpression(path.node, delegate);
-				} else if (options.output === 'generator') {
+				} else if (output === 'generator') {
 					expr = b.yieldExpression(path.node, delegate);
 				} else {
 					throw new Error(
@@ -140,7 +140,7 @@ namespace degenerator {
 	export type DegeneratorName = string | RegExp;
 	export type DegeneratorNames = DegeneratorName[];
 	export interface DegeneratorOptions {
-		output: string;
+		output?: string;
 	}
 }
 
