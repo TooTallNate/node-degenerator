@@ -95,13 +95,13 @@ describe('degenerator()', () => {
 	});
 
 	describe('`compile()`', () => {
-		it('should compile code into an invocable async function', done => {
-			const a = () => Promise.resolve('a');
+		it('should compile code into an invocable async function', () => {
+			const a = (v: string) => Promise.resolve(v);
 			const b = () => 'b';
-			function aPlusB(): string {
-				return a() + b();
+			function aPlusB(v: string): string {
+				return a(v) + b();
 			}
-			const fn = compile<() => Promise<string>>(
+			const fn = compile<(v: string) => Promise<string>>(
 				'' + aPlusB,
 				'aPlusB',
 				['a'],
@@ -109,12 +109,11 @@ describe('degenerator()', () => {
 					sandbox: { a, b }
 				}
 			);
-			fn().then((val: string) => {
-				assert.equal(val, 'ab');
-				done();
-			}, done);
+			return fn('c').then((val: string) => {
+				assert.equal(val, 'cb');
+			});
 		});
-		it('should be able to await non-promises', done => {
+		it('should be able to await non-promises', () => {
 			const a = () => 'a';
 			const b = () => 'b';
 			function aPlusB(): string {
@@ -128,12 +127,11 @@ describe('degenerator()', () => {
 					sandbox: { a, b }
 				}
 			);
-			fn().then((val: string) => {
+			return fn().then((val: string) => {
 				assert.equal(val, 'ab');
-				done();
-			}, done);
+			});
 		});
-		it('should be able to compile functions with no async', done => {
+		it('should be able to compile functions with no async', () => {
 			const a = () => 'a';
 			const b = () => 'b';
 			function aPlusB(): string {
@@ -147,10 +145,9 @@ describe('degenerator()', () => {
 					sandbox: { a, b }
 				}
 			);
-			fn().then((val: string) => {
+			return fn().then((val: string) => {
 				assert.equal(val, 'ab');
-				done();
-			}, done);
+			});
 		});
 		it('should throw an Error if no function is returned from the `vm`', () => {
 			let err;

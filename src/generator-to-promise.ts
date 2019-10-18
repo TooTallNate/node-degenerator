@@ -33,18 +33,18 @@ export default function generatorToPromise<T>(
 ): (...args: any[]) => Promise<T> {
 	if (!isGen(generatorFunction)) {
 		if (typeof generatorFunction === 'function') {
-			return function(this: any) {
+			return function(this: any, ...args: any[]) {
 				return Promise.resolve(true).then(() =>
-					generatorFunction.call(this, arguments)
+					generatorFunction.apply(this, args)
 				);
 			};
 		}
 		throw new Error('The given function must be a generator function');
 	}
 
-	return function(this: any) {
+	return function(this: any, ...args: any[]) {
 		const deferred = createDeferred<T>();
-		const generator = generatorFunction.call(this, arguments);
+		const generator = generatorFunction.apply(this, args);
 		(function next(error?: Error | null, value?: any) {
 			let genState = null;
 			try {
