@@ -3,32 +3,34 @@ import { generate } from 'escodegen';
 import { parseScript } from 'esprima';
 import { visit, namedTypes as n, builders as b } from 'ast-types';
 
-type Name = string | RegExp;
-
 /**
- * Turns sync JavaScript code into an JavaScript with async Generator Functions.
+ * Turns sync JavaScript code into an JavaScript with async Functions.
  *
  * @param {String} jsStr JavaScript string to convert
  * @param {Array} names Array of function names to add `yield` operators to
- * @return {String} Converted JavaScript string with Generator functions injected
+ * @return {String} Converted JavaScript string with async/await injected
  * @api public
  */
 
-function degenerator(jsStr: string, _names: Name[]): string {
+function degenerator(
+	jsStr: string,
+	_names: degenerator.DegeneratorNames,
+	options: degenerator.DegeneratorOptions = { output: 'async' }
+): string {
 	if (!Array.isArray(_names)) {
 		throw new TypeError('an array of async function "names" is required');
 	}
 
-	// duplicate the `names` array since it's rude to augment the user args
+	// Duplicate the `names` array since it's rude to augment the user args
 	const names = _names.slice(0);
 
 	const ast = parseScript(jsStr);
 
-	// first pass is to find the `function` nodes and turn them into `function *`
-	// generator functions only if their body includes CallExpressions to
-	// function in `names`. We also add the names of the functions to the `names` array.
-	// We'll iterate several time, as every iteration might add new items to the `names`
-	// array, until no new names were added in the iteration.
+	// First pass is to find the `function` nodes and turn them into async or
+	// generator functions only if their body includes `CallExpressions` to
+	// function in `names`. We also add the names of the functions to the `names`
+	// array. We'll iterate several time, as every iteration might add new items
+	// to the `names` array, until no new names were added in the iteration.
 	let lastNamesLength = 0;
 	do {
 		lastNamesLength = names.length;
@@ -72,15 +74,20 @@ function degenerator(jsStr: string, _names: Name[]): string {
 							return false;
 						}
 					});
+
 					if (!shouldDegenerate) {
 						return false;
 					}
-					// got a "function" expression/statement,
-					// convert it into a "generator function"
-					//path.node.async = true;
-					path.node.generator = true;
 
-					// add function name to `names` array
+					// Got a "function" expression/statement,
+					// convert it into an async or generator function
+					if (options.output === 'async') {
+						path.node.async = true;
+					} else if (options.output === 'generator') {
+						path.node.generator = true;
+					}
+
+					// Add function name to `names` array
 					if (!checkName(path.node.id.name, names)) {
 						names.push(path.node.id.name);
 					}
@@ -91,17 +98,30 @@ function degenerator(jsStr: string, _names: Name[]): string {
 		});
 	} while (lastNamesLength !== names.length);
 
-	// second pass is for adding `yield` statements to any function
+	// Second pass is for adding `await`/`yield` statements to any function
 	// invocations that match the given `names` array.
 	visit(ast, {
 		visitCallExpression(path) {
 			if (checkNames(path.node, names)) {
-				// a "function invocation" expression,
-				// we need to inject a `YieldExpression`
+				// A "function invocation" expression,
+				// we need to inject a `AwaitExpression`/`YieldExpression`
 				const delegate = false;
-				const { name, parent: { node: pNode } } = path;
-				const expr = b.yieldExpression(path.node, delegate);
-				//const expr = b.awaitExpression(path.node, delegate);
+				const {
+					name,
+					parent: { node: pNode }
+				} = path;
+
+				let expr;
+				if (options.output === 'async') {
+					expr = b.awaitExpression(path.node, delegate);
+				} else if (options.output === 'generator') {
+					expr = b.yieldExpression(path.node, delegate);
+				} else {
+					throw new Error(
+						'Only "async" and "generator" are allowd `output` values'
+					);
+				}
+
 				if (n.CallExpression.check(pNode)) {
 					pNode.arguments[name] = expr;
 				} else {
@@ -116,6 +136,14 @@ function degenerator(jsStr: string, _names: Name[]): string {
 	return generate(ast);
 }
 
+namespace degenerator {
+	export type DegeneratorName = string | RegExp;
+	export type DegeneratorNames = DegeneratorName[];
+	export interface DegeneratorOptions {
+		output: string;
+	}
+}
+
 /**
  * Returns `true` if `node` has a matching name to one of the entries in the
  * `names` array.
@@ -126,7 +154,10 @@ function degenerator(jsStr: string, _names: Name[]): string {
  * @api private
  */
 
-function checkNames({ callee }: n.CallExpression, names: Name[]): boolean {
+function checkNames(
+	{ callee }: n.CallExpression,
+	names: degenerator.DegeneratorNames
+): boolean {
 	let name: string;
 	if (n.Identifier.check(callee)) {
 		name = callee.name;
@@ -151,7 +182,7 @@ function checkNames({ callee }: n.CallExpression, names: Name[]): boolean {
 	return checkName(name, names);
 }
 
-function checkName(name: string, names: Name[]): boolean {
+function checkName(name: string, names: degenerator.DegeneratorNames): boolean {
 	// now that we have the `name`, check if any entries match in the `names` array
 	for (let i = 0; i < names.length; i++) {
 		const n = names[i];
