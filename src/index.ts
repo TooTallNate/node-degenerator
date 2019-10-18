@@ -163,12 +163,21 @@ namespace degenerator {
 			options.sandbox,
 			options
 		);
-		if (supportsAsync) {
+		if (typeof fn !== 'function') {
+			throw new Error(
+				`Expected a function to be returned, but got ${typeof fn}`
+			);
+		}
+		if (isAsyncFunction(fn)) {
 			return fn as T;
 		} else {
 			return (generatorToPromise(fn) as unknown) as T;
 		}
 	}
+}
+
+function isAsyncFunction(fn: any): boolean {
+	return typeof fn === 'function' && fn.constructor.name === 'AsyncFunction';
 }
 
 /**

@@ -133,5 +133,37 @@ describe('degenerator()', () => {
 				done();
 			}, done);
 		});
+		it('should be able to compile functions with no async', done => {
+			const a = () => 'a';
+			const b = () => 'b';
+			function aPlusB(): string {
+				return a() + b();
+			}
+			const fn = compile<() => Promise<string>>(
+				'' + aPlusB,
+				'aPlusB',
+				[],
+				{
+					sandbox: { a, b }
+				}
+			);
+			fn().then((val: string) => {
+				assert.equal(val, 'ab');
+				done();
+			}, done);
+		});
+		it('should throw an Error if no function is returned from the `vm`', () => {
+			let err;
+			try {
+				compile<() => Promise<string>>('const foo = 1', 'foo', []);
+			} catch (_err) {
+				err = _err;
+			}
+			assert(err);
+			assert.equal(
+				err.message,
+				'Expected a function to be returned, but got number'
+			);
+		});
 	});
 });
