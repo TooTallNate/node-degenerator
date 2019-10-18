@@ -1,33 +1,31 @@
 degenerator
 ===========
-### Turns sync functions into async generator functions
+### Turns sync functions into async functions
 [![Build Status](https://github.com/TooTallNate/node-degenerator/workflows/Node%20CI/badge.svg)](https://github.com/TooTallNate/node-degenerator/actions?workflow=Node+CI)
 
 Sometimes you need to write sync looking code that's really async under the hood.
 This module takes a String to one or more synchronous JavaScript functions, and
-returns a new String that with those JS functions transpiled into ES6 Generator
-Functions.
+returns a new String that with those JS functions transpiled into `async`
+functions.
 
 So this:
 
-``` js
-function foo () {
+```js
+function foo() {
   return a('bar') || b();
 }
 ```
 
 Gets compiled into:
 
-``` js
-function* foo() {
-    return (yield a('bar')) || (yield b());
+```js
+async function foo() {
+    return await a('bar') || await b();
 }
 ```
 
-From there, you can provide asynchronous thunk-based or Generator-based
-implementations for the `a()` and `b()` functions, in conjunction with any
-Generator-based flow control library to execute the contents of the
-function asynchronously.
+With the compiled output code, you can evaluate the code using the `vm` module
+in Node.js, or save the code to a file and require it, or whatever.
 
 
 Installation
@@ -35,7 +33,7 @@ Installation
 
 Install with `npm`:
 
-``` bash
+```bash
 $ npm install degenerator
 ```
 
@@ -50,27 +48,26 @@ and HTTP request and returned the response body.
 The user has provided us with this implementation:
 
 ``` js
-function myFn () {
-  var one = get('https://google.com');
-  var two = get('http://nodejs.org');
-  var three = JSON.parse(get('http://jsonip.org'));
+function myFn() {
+  const one = get('https://google.com');
+  const two = get('http://nodejs.org');
+  const three = JSON.parse(get('http://jsonip.org'));
   return [one, two, three];
 }
 ```
 
-Now we can compile this into an asyncronous generator function, implement the
+Now we can compile this into an asyncronous function, implement the
 async `get()` function, and finally evaluate it into a real JavaScript function
 instance with the `vm` module:
 
 
-``` js
-var co = require('co');
-var vm = require('vm');
-var degenerator = require('degenerator');
+```typescript
+import vm from 'vm';
+import degenerator from 'degenerator';
 
-// the `get()` function is thunk-based (error handling omitted for brevity)
-function get (endpoint) {
-  return function (fn) {
+// the `get()` function is Promise-based (error handling omitted for brevity)
+function get(endpoint: string) {
+  return new Promise((resolve, reject) => {
     var mod = 0 == endpoint.indexOf('https:') ? require('https') : require('http');
     var req = mod.get(endpoint);
     req.on('response', function (res) {
@@ -78,28 +75,20 @@ function get (endpoint) {
       res.setEncoding('utf8');
       res.on('data', function (b) { data += b; });
       res.on('end', function () {
-        fn(null, data);
+        resolve(data);
       });
     });
-  };
+  });
 }
 
 // convert the JavaScript string provided from the user (assumed to be `str` var)
 str = degenerator(str, [ 'get' ]);
 
-// at this stage, you could use a transpiler like `facebook/regenerator`
-// here if desired.
-
-// turn the JS String into a real GeneratorFunction instance
-var genFn = vm.runInNewContext('(' + str + ')', { get: get });
-
-// use a generator-based flow control library (`visionmedia/co`, `jmar777/suspend`,
-// etc.) to create an async function from the generator function.
-
-var asnycFn = co(genFn);
+// turn the JS String into a real async function instance
+const asyncFn = vm.runInNewContext('(' + str + ')', { get });
 
 // NOW USE IT!!!
-asyncFn(function (err, res) {
+asyncFn().then((res) => {
   // ...
 });
 ```
@@ -110,8 +99,7 @@ API
 
 ### degenerator(String jsStr, Array functionNames) → String
 
-Returns a "degeneratorified" JavaScript string, with ES6 Generator
-functions transplanted.
+Returns a "degeneratorified" JavaScript string, with `async`/`await` transplanted.
 
 
 License
