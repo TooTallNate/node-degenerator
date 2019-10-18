@@ -6,14 +6,14 @@ import { visit, namedTypes as n, builders as b } from 'ast-types';
 /**
  * Turns sync JavaScript code into an JavaScript with async Functions.
  *
- * @param {String} jsStr JavaScript string to convert
+ * @param {String} code JavaScript string to convert
  * @param {Array} names Array of function names to add `yield` operators to
  * @return {String} Converted JavaScript string with async/await injected
  * @api public
  */
 
 function degenerator(
-	jsStr: string,
+	code: string,
 	_names: degenerator.DegeneratorNames,
 	{ output = 'async' }: degenerator.DegeneratorOptions = {}
 ): string {
@@ -24,7 +24,7 @@ function degenerator(
 	// Duplicate the `names` array since it's rude to augment the user args
 	const names = _names.slice(0);
 
-	const ast = parseScript(jsStr);
+	const ast = parseScript(code);
 
 	// First pass is to find the `function` nodes and turn them into async or
 	// generator functions only if their body includes `CallExpressions` to
