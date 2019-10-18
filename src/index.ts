@@ -1,7 +1,10 @@
+import { wrap } from 'co';
 import { isRegExp } from 'util';
 import { generate } from 'escodegen';
 import { parseScript } from 'esprima';
+import { Context, runInNewContext } from 'vm';
 import { visit, namedTypes as n, builders as b } from 'ast-types';
+import supportsAsync from './supports-async';
 
 /**
  * Turns sync JavaScript code into an JavaScript with async Functions.
@@ -142,6 +145,27 @@ namespace degenerator {
 	export interface DegeneratorOptions {
 		output?: string;
 	}
+	export interface CompileOptions extends DegeneratorOptions {
+		sandbox?: Context;
+	}
+	export function compile<T>(
+		code: string,
+		returnName: string,
+		names: DegeneratorNames,
+		options: CompileOptions = {}
+	): T {
+		const output = supportsAsync ? 'async' : 'generator';
+		const compiled = degenerator(code, names, { ...options, output });
+		const fn = runInNewContext(
+			`${compiled};${returnName}`,
+			options.sandbox
+		);
+		if (supportsAsync) {
+			return fn as T;
+		} else {
+			return (wrap(fn) as unknown) as T;
+		}
+	}
 }
 
 /**
@@ -177,7 +201,7 @@ function checkNames(
 			return false;
 		}
 	} else {
-		throw new Error(`don't know how to get name for: ${callee.type}`);
+		throw new Error(`Don't know how to get name for: ${callee.type}`);
 	}
 	return checkName(name, names);
 }

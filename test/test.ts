@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import assert from 'assert';
-import degenerator from '../src';
+import degenerator, { compile } from '../src';
 
 describe('degenerator()', () => {
 	describe('"async" output', () => {
@@ -18,7 +18,9 @@ describe('degenerator()', () => {
 			);
 		});
 		it('should be the default "output" mode (with options)', () => {
-			function foo(a: () => string): string { return a(); }
+			function foo(a: () => string): string {
+				return a();
+			}
 			const compiled = degenerator('' + foo, ['a'], {});
 			assert.equal(
 				compiled.replace(/\s+/g, ' '),
@@ -26,7 +28,9 @@ describe('degenerator()', () => {
 			);
 		});
 		it('should be the default "output" mode (without options)', () => {
-			function foo(a: () => string): string { return a(); }
+			function foo(a: () => string): string {
+				return a();
+			}
 			const compiled = degenerator('' + foo, ['a']);
 			assert.equal(
 				compiled.replace(/\s+/g, ' '),
@@ -88,5 +92,27 @@ describe('degenerator()', () => {
 					);
 				});
 			});
+	});
+
+	describe('`compile()`', () => {
+		it('should compile code into an invocable async function', done => {
+			const a = () => Promise.resolve('a');
+			const b = () => 'b';
+			function aPlusB(): string {
+				return a() + b();
+			}
+			const fn = compile<() => Promise<string>>(
+				'' + aPlusB,
+				'aPlusB',
+				['a'],
+				{
+					sandbox: { a, b }
+				}
+			);
+			fn().then((val: string) => {
+				assert.equal(val, 'ab');
+				done();
+			});
+		});
 	});
 });

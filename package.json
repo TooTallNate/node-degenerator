@@ -26,10 +26,12 @@
   "license": "MIT",
   "dependencies": {
     "ast-types": "^0.13.2",
+    "co": "^4.6.0",
     "escodegen": "^1.8.1",
     "esprima": "^4.0.0"
   },
   "devDependencies": {
+    "@types/co": "^4.6.2",
     "@types/escodegen": "^0.0.6",
     "@types/esprima": "^4.0.2",
     "@types/mocha": "^5.2.7",
