@@ -2,7 +2,7 @@ import { wrap } from 'co';
 import { isRegExp } from 'util';
 import { generate } from 'escodegen';
 import { parseScript } from 'esprima';
-import { Context, runInNewContext } from 'vm';
+import { Context, RunningScriptOptions, runInNewContext } from 'vm';
 import { visit, namedTypes as n, builders as b } from 'ast-types';
 import supportsAsync from './supports-async';
 
@@ -145,7 +145,7 @@ namespace degenerator {
 	export interface DegeneratorOptions {
 		output?: string;
 	}
-	export interface CompileOptions extends DegeneratorOptions {
+	export type CompileOptions = DegeneratorOptions & RunningScriptOptions & {
 		sandbox?: Context;
 	}
 	export function compile<T>(
@@ -158,7 +158,8 @@ namespace degenerator {
 		const compiled = degenerator(code, names, { ...options, output });
 		const fn = runInNewContext(
 			`${compiled};${returnName}`,
-			options.sandbox
+			options.sandbox,
+			options
 		);
 		if (supportsAsync) {
 			return fn as T;
