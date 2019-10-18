@@ -65,7 +65,7 @@ instance with the `vm` module:
 import vm from 'vm';
 import degenerator from 'degenerator';
 
-// the `get()` function is Promise-based (error handling omitted for brevity)
+// The `get()` function is Promise-based (error handling omitted for brevity)
 function get(endpoint: string) {
   return new Promise((resolve, reject) => {
     var mod = 0 == endpoint.indexOf('https:') ? require('https') : require('http');
@@ -81,15 +81,15 @@ function get(endpoint: string) {
   });
 }
 
-// convert the JavaScript string provided from the user (assumed to be `str` var)
+// Convert the JavaScript string provided from the user (assumed to be `str` var)
 str = degenerator(str, [ 'get' ]);
 
-// turn the JS String into a real async function instance
-const asyncFn = vm.runInNewContext('(' + str + ')', { get });
+// Turn the JS String into a real async function instance
+const asyncFn = vm.runInNewContext(`(${str})`, { get });
 
-// NOW USE IT!!!
+// Now we can invoke the function asynchronously
 asyncFn().then((res) => {
-  // ...
+  // Do something with `res`...
 });
 ```
 
