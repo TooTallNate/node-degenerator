@@ -2,8 +2,8 @@ import { wrap } from 'co';
 import { isRegExp } from 'util';
 import { generate } from 'escodegen';
 import { parseScript } from 'esprima';
-import { Context, RunningScriptOptions, runInNewContext } from 'vm';
 import { visit, namedTypes as n, builders as b } from 'ast-types';
+import { Context, RunningScriptOptions, runInNewContext } from 'vm';
 import supportsAsync from './supports-async';
 
 /**
@@ -145,9 +145,10 @@ namespace degenerator {
 	export interface DegeneratorOptions {
 		output?: string;
 	}
-	export type CompileOptions = DegeneratorOptions & RunningScriptOptions & {
-		sandbox?: Context;
-	}
+	export type CompileOptions = DegeneratorOptions &
+		RunningScriptOptions & {
+			sandbox?: Context;
+		};
 	export function compile<T>(
 		code: string,
 		returnName: string,
