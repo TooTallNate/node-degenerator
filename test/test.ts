@@ -112,7 +112,26 @@ describe('degenerator()', () => {
 			fn().then((val: string) => {
 				assert.equal(val, 'ab');
 				done();
-			});
+			}, done);
+		});
+		it('should be able to await non-promises', done => {
+			const a = () => 'a';
+			const b = () => 'b';
+			function aPlusB(): string {
+				return a() + b();
+			}
+			const fn = compile<() => Promise<string>>(
+				'' + aPlusB,
+				'aPlusB',
+				['a'],
+				{
+					sandbox: { a, b }
+				}
+			);
+			fn().then((val: string) => {
+				assert.equal(val, 'ab');
+				done();
+			}, done);
 		});
 	});
 });

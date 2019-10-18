@@ -1,10 +1,11 @@
-import { wrap } from 'co';
 import { isRegExp } from 'util';
 import { generate } from 'escodegen';
 import { parseScript } from 'esprima';
 import { visit, namedTypes as n, builders as b } from 'ast-types';
 import { Context, RunningScriptOptions, runInNewContext } from 'vm';
+
 import supportsAsync from './supports-async';
+import generatorToPromise from './generator-to-promise';
 
 /**
  * Turns sync JavaScript code into an JavaScript with async Functions.
@@ -165,7 +166,7 @@ namespace degenerator {
 		if (supportsAsync) {
 			return fn as T;
 		} else {
-			return (wrap(fn) as unknown) as T;
+			return (generatorToPromise(fn) as unknown) as T;
 		}
 	}
 }
