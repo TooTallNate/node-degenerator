@@ -46,6 +46,6 @@
     "eslint-plugin-react": "7.12.4",
     "mocha": "^6.2.0",
     "rimraf": "^3.0.0",
-    "typescript": "^3.5.3"
+    "typescript": "^3.7.3"
   }
 }
