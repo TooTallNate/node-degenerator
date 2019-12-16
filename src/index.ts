@@ -143,8 +143,9 @@ function degenerator(
 namespace degenerator {
 	export type DegeneratorName = string | RegExp;
 	export type DegeneratorNames = DegeneratorName[];
+	export type DegeneratorOutput = 'async' | 'generator';
 	export interface DegeneratorOptions {
-		output?: string;
+		output?: DegeneratorOutput;
 	}
 	export interface CompileOptions
 		extends DegeneratorOptions,
