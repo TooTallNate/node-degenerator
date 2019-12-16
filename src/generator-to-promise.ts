@@ -34,22 +34,25 @@ export default function generatorToPromise<T>(
 	if (!isGen(generatorFunction)) {
 		if (typeof generatorFunction === 'function') {
 			return function(this: any, ...args: any[]) {
-				return Promise.resolve(true).then(() =>
-					generatorFunction.apply(this, args)
-				);
+				return Promise.resolve(true).then(() => {
+					return generatorFunction.apply(this, args);
+				});
 			};
 		}
 		throw new Error('The given function must be a generator function');
 	}
 
-	return function(this: any, ...args: any[]) {
+	return function(this: any, ...args: any[]): Promise<T> {
 		const deferred = createDeferred<T>();
 		const generator = generatorFunction.apply(this, args);
-		(function next(error?: Error | null, value?: any) {
+		(function next(err?: Error | null, value?: any) {
 			let genState = null;
 			try {
-				if (error) genState = generator.throw(error);
-				else genState = generator.next(value);
+				if (err) {
+					genState = generator.throw(err);
+				} else {
+					genState = generator.next(value);
+				}
 			} catch (e) {
 				genState = { value: Promise.reject(e), done: true };
 			}
@@ -59,7 +62,7 @@ export default function generatorToPromise<T>(
 			} else {
 				Promise.resolve(genState.value)
 					.then(promiseResult => next(null, promiseResult))
-					.catch(error => next(error));
+					.catch(err => next(err));
 			}
 		})();
 
