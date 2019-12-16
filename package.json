@@ -33,7 +33,7 @@
     "@types/escodegen": "^0.0.6",
     "@types/esprima": "^4.0.2",
     "@types/mocha": "^5.2.7",
-    "@types/node": "^10.5.3",
+    "@types/node": "^12.12.17",
     "@typescript-eslint/eslint-plugin": "1.6.0",
     "@typescript-eslint/parser": "1.1.0",
     "cpy-cli": "^2.0.0",
