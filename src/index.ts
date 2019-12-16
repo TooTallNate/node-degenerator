@@ -151,7 +151,7 @@ namespace degenerator {
 			RunningScriptOptions {
 		sandbox?: Context;
 	}
-	export function compile<T>(
+	export function compile<T extends Function>(
 		code: string,
 		returnName: string,
 		names: DegeneratorNames,
