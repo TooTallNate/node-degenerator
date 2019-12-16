@@ -146,10 +146,11 @@ namespace degenerator {
 	export interface DegeneratorOptions {
 		output?: string;
 	}
-	export type CompileOptions = DegeneratorOptions &
-		RunningScriptOptions & {
-			sandbox?: Context;
-		};
+	export interface CompileOptions
+		extends DegeneratorOptions,
+			RunningScriptOptions {
+		sandbox?: Context;
+	}
 	export function compile<T>(
 		code: string,
 		returnName: string,
