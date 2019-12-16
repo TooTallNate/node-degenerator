@@ -170,7 +170,7 @@ namespace degenerator {
 			);
 		}
 		if (isAsyncFunction(fn)) {
-			return fn as T;
+			return fn;
 		} else {
 			return (generatorToPromise(fn) as unknown) as T;
 		}
