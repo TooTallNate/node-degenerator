@@ -1,4 +1,4 @@
 /dist
 /yarn.lock
 /node_modules
-/?.js
+/?.?s
