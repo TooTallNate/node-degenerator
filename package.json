@@ -1,7 +1,7 @@
 {
   "name": "degenerator",
   "version": "2.1.4",
-  "description": "Turns sync functions into async generator functions",
+  "description": "Compiles sync functions into async generator functions",
   "main": "dist/src/index",
   "typings": "dist/src/index",
   "files": [
