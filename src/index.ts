@@ -5,7 +5,7 @@ import { visit, namedTypes as n, builders as b } from 'ast-types';
 import { Context, RunningScriptOptions, runInNewContext } from 'vm';
 
 import _supportsAsync from './supports-async';
-import generatorToPromise from './generator-to-promise';
+import generatorToPromiseFn from './generator-to-promise';
 
 /**
  * Compiles sync JavaScript code into JavaScript with async Functions.
@@ -174,11 +174,11 @@ namespace degenerator {
 		if (isAsyncFunction(fn)) {
 			return fn;
 		} else {
-			const rtn = (generatorToPromise(fn) as unknown) as T;
+			const rtn = (generatorToPromiseFn(fn) as unknown) as T;
 			Object.defineProperty(rtn, 'toString', {
 				value: fn.toString.bind(fn),
 				enumerable: false
-			})
+			});
 			return rtn;
 		}
 	}

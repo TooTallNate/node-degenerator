@@ -134,9 +134,9 @@ describe('degenerator()', () => {
 				}
 			);
 			if (supportsAsync) {
-				assert(/await b\(\)/.test(fn+''));
+				assert(/await b\(\)/.test(fn + ''));
 			} else {
-				assert(/yield b\(\)/.test(fn+''));
+				assert(/yield b\(\)/.test(fn + ''));
 			}
 		});
 		it('should be able to await non-promises', () => {
@@ -187,6 +187,32 @@ describe('degenerator()', () => {
 				err.message,
 				'Expected a "function" to be returned for `foo`, but got "number"'
 			);
+		});
+		it('should be compile if branches', () => {
+			function ifA(): string {
+				if (a()) {
+					return 'foo';
+				}
+				return 'bar';
+			}
+			function a() {
+				if (b()) {
+					return false;
+				}
+				return true;
+			}
+			function b() {
+				return false;
+			}
+			const fn = compile<() => Promise<string>>(
+				`${ifA};${a}`,
+				'ifA',
+				['b'],
+				{ sandbox: { b } }
+			);
+			return fn().then((val: string) => {
+				assert.equal(val, 'foo');
+			});
 		});
 	});
 });
