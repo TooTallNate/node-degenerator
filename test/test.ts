@@ -1,9 +1,15 @@
 import fs from 'fs';
 import path from 'path';
 import assert from 'assert';
-import degenerator, { compile } from '../src';
+import degenerator, { compile, supportsAsync } from '../src';
 
 describe('degenerator()', () => {
+	describe('`supportsAsync`', () => {
+		it('should export boolean `supportsAsync`', () => {
+			assert.equal(typeof supportsAsync, 'boolean');
+		});
+	});
+
 	describe('"async" output', () => {
 		it('should support "async" output functions', () => {
 			function aPlusB(a: () => string, b: () => string): string {

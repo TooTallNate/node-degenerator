@@ -4,7 +4,7 @@ import { parseScript } from 'esprima';
 import { visit, namedTypes as n, builders as b } from 'ast-types';
 import { Context, RunningScriptOptions, runInNewContext } from 'vm';
 
-import supportsAsync from './supports-async';
+import _supportsAsync from './supports-async';
 import generatorToPromise from './generator-to-promise';
 
 /**
@@ -152,13 +152,14 @@ namespace degenerator {
 			RunningScriptOptions {
 		sandbox?: Context;
 	}
+	export const supportsAsync = _supportsAsync;
 	export function compile<T extends Function>(
 		code: string,
 		returnName: string,
 		names: DegeneratorNames,
 		options: CompileOptions = {}
 	): T {
-		const output = supportsAsync ? 'async' : 'generator';
+		const output = _supportsAsync ? 'async' : 'generator';
 		const compiled = degenerator(code, names, { ...options, output });
 		const fn = runInNewContext(
 			`${compiled};${returnName}`,
