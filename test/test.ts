@@ -134,7 +134,7 @@ describe('degenerator()', () => {
 				}
 			);
 			if (supportsAsync) {
-				assert(/async b\(\)/.test(fn+''));
+				assert(/await b\(\)/.test(fn+''));
 			} else {
 				assert(/yield b\(\)/.test(fn+''));
 			}
