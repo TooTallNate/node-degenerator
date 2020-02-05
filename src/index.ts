@@ -8,10 +8,10 @@ import _supportsAsync from './supports-async';
 import generatorToPromise from './generator-to-promise';
 
 /**
- * Turns sync JavaScript code into an JavaScript with async Functions.
+ * Compiles sync JavaScript code into JavaScript with async Functions.
  *
  * @param {String} code JavaScript string to convert
- * @param {Array} names Array of function names to add `yield` operators to
+ * @param {Array} names Array of function names to add `await` operators to
  * @return {String} Converted JavaScript string with async/await injected
  * @api public
  */
