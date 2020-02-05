@@ -174,7 +174,12 @@ namespace degenerator {
 		if (isAsyncFunction(fn)) {
 			return fn;
 		} else {
-			return (generatorToPromise(fn) as unknown) as T;
+			const rtn = (generatorToPromise(fn) as unknown) as T;
+			Object.defineProperty(rtn, 'toString', {
+				value: fn.toString.bind(fn),
+				enumerable: false
+			})
+			return rtn;
 		}
 	}
 }

@@ -119,6 +119,26 @@ describe('degenerator()', () => {
 				assert.equal(val, 'cb');
 			});
 		});
+		it('should contain the compiled code in `toString()` output', () => {
+			const a = () => 'a';
+			const b = () => 'b';
+			function aPlusB(): string {
+				return a() + b();
+			}
+			const fn = compile<() => Promise<string>>(
+				'' + aPlusB,
+				'aPlusB',
+				['b'],
+				{
+					sandbox: { a, b }
+				}
+			);
+			if (supportsAsync) {
+				assert(/async b\(\)/.test(fn+''));
+			} else {
+				assert(/yield b\(\)/.test(fn+''));
+			}
+		});
 		it('should be able to await non-promises', () => {
 			const a = () => 'a';
 			const b = () => 'b';
