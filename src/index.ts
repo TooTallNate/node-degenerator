@@ -4,9 +4,6 @@ import { parseScript } from 'esprima';
 import { visit, namedTypes as n, builders as b } from 'ast-types';
 import { Context, RunningScriptOptions, runInNewContext } from 'vm';
 
-import _supportsAsync from './supports-async';
-import generatorToPromiseFn from './generator-to-promise';
-
 /**
  * Compiles sync JavaScript code into JavaScript with async Functions.
  *
@@ -19,7 +16,6 @@ import generatorToPromiseFn from './generator-to-promise';
 function degenerator(
 	code: string,
 	_names: degenerator.DegeneratorNames,
-	{ output = 'async' }: degenerator.DegeneratorOptions = {}
 ): string {
 	if (!Array.isArray(_names)) {
 		throw new TypeError('an array of async function "names" is required');
@@ -84,12 +80,8 @@ function degenerator(
 					}
 
 					// Got a "function" expression/statement,
-					// convert it into an async or generator function
-					if (output === 'async') {
-						path.node.async = true;
-					} else if (output === 'generator') {
-						path.node.generator = true;
-					}
+					// convert it into an async function
+					path.node.async = true;
 
 					// Add function name to `names` array
 					if (!checkName(path.node.id.name, names)) {
@@ -115,16 +107,7 @@ function degenerator(
 					parent: { node: pNode }
 				} = path;
 
-				let expr;
-				if (output === 'async') {
-					expr = b.awaitExpression(path.node, delegate);
-				} else if (output === 'generator') {
-					expr = b.yieldExpression(path.node, delegate);
-				} else {
-					throw new Error(
-						'Only "async" and "generator" are allowd `output` values'
-					);
-				}
+				const expr = b.awaitExpression(path.node, delegate);
 
 				if (n.CallExpression.check(pNode)) {
 					pNode.arguments[name] = expr;
@@ -143,24 +126,17 @@ function degenerator(
 namespace degenerator {
 	export type DegeneratorName = string | RegExp;
 	export type DegeneratorNames = DegeneratorName[];
-	export type DegeneratorOutput = 'async' | 'generator';
-	export interface DegeneratorOptions {
-		output?: DegeneratorOutput;
-	}
 	export interface CompileOptions
-		extends DegeneratorOptions,
-			RunningScriptOptions {
+		extends RunningScriptOptions {
 		sandbox?: Context;
 	}
-	export const supportsAsync = _supportsAsync;
-	export function compile<T extends Function>(
+	export function compile<R, A extends any[] = []>(
 		code: string,
 		returnName: string,
 		names: DegeneratorNames,
 		options: CompileOptions = {}
-	): T {
-		const output = _supportsAsync ? 'async' : 'generator';
-		const compiled = degenerator(code, names, { ...options, output });
+	): (...args: A) => Promise<R> {
+		const compiled = degenerator(code, names);
 		const fn = runInNewContext(
 			`${compiled};${returnName}`,
 			options.sandbox,
@@ -171,21 +147,23 @@ namespace degenerator {
 				`Expected a "function" to be returned for \`${returnName}\`, but got "${typeof fn}"`
 			);
 		}
-		if (isAsyncFunction(fn)) {
-			return fn;
-		} else {
-			const rtn = (generatorToPromiseFn(fn) as unknown) as T;
-			Object.defineProperty(rtn, 'toString', {
-				value: fn.toString.bind(fn),
-				enumerable: false
-			});
-			return rtn;
-		}
+		const r = function(this: any, ...args: A): Promise<R> {
+			try {
+				const p = fn.apply(this, args);
+				if (typeof p.then === 'function') {
+					return p;
+				}
+				return Promise.resolve(p);
+			} catch (err) {
+				return Promise.reject(err);
+			}
+		};
+		Object.defineProperty(r, 'toString', {
+			value: fn.toString.bind(fn),
+			enumerable: false
+		});
+		return r;
 	}
-}
-
-function isAsyncFunction(fn: any): boolean {
-	return typeof fn === 'function' && fn.constructor.name === 'AsyncFunction';
 }
 
 /**
