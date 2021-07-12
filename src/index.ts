@@ -1,4 +1,4 @@
-import { types } from 'util';
+import { isRegExp } from 'util';
 import { generate } from 'escodegen';
 import { parseScript } from 'esprima';
 import { visit, namedTypes as n, builders as b } from 'ast-types';
@@ -163,9 +163,7 @@ namespace degenerator {
 		const output = _supportsAsync ? 'async' : 'generator';
 		const compiled = degenerator(code, names, { ...options, output });
 		const vm = new VM(options);
-		const fn = vm.run(
-			`${compiled};${returnName}`,
-		);
+		const fn = vm.run(`${compiled};${returnName}`);
 		if (typeof fn !== 'function') {
 			throw new Error(
 				`Expected a "function" to be returned for \`${returnName}\`, but got "${typeof fn}"`
@@ -230,7 +228,7 @@ function checkName(name: string, names: degenerator.DegeneratorNames): boolean {
 	// now that we have the `name`, check if any entries match in the `names` array
 	for (let i = 0; i < names.length; i++) {
 		const n = names[i];
-		if (types.isRegExp(n)) {
+		if (isRegExp(n)) {
 			if (n.test(name)) {
 				return true;
 			}
