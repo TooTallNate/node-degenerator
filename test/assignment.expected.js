@@ -3,9 +3,9 @@ var biz = foo;
 function foo() {
     return 42;
 }
-function* bar() {
-    return yield baz();
+async function bar() {
+    return await baz();
 }
-function* bir() {
-    return yield biz();
+async function bir() {
+    return await biz();
 }

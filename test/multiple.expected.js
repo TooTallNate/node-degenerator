@@ -1,9 +1,9 @@
-function* foo() {
-    return yield baz();
+async function foo() {
+    return await baz();
 }
-function* bar() {
-    return yield foo(baz);
+async function bar() {
+    return await foo(baz);
 }
-function* baz() {
-    return yield bar();
+async function baz() {
+    return await bar();
 }
