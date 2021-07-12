@@ -162,7 +162,7 @@ describe('degenerator()', () => {
 		it('should prevent privilege escalation of untrusted code', async() => {
 			let err;
 			try {
-				const fn = compile<() => Promise<any>>(
+				const fn = compile<typeof process>(
 					`const f = this.constructor.constructor('return process');`,
 					'f',
 					[],
