@@ -15,7 +15,7 @@ import { Context, RunningScriptOptions, runInNewContext } from 'vm';
 
 function degenerator(
 	code: string,
-	_names: degenerator.DegeneratorNames,
+	_names: degenerator.DegeneratorNames
 ): string {
 	if (!Array.isArray(_names)) {
 		throw new TypeError('an array of async function "names" is required');
@@ -72,7 +72,7 @@ function degenerator(
 								shouldDegenerate = true;
 							}
 							return false;
-						}
+						},
 					});
 
 					if (!shouldDegenerate) {
@@ -90,7 +90,7 @@ function degenerator(
 				}
 
 				this.traverse(path);
-			}
+			},
 		});
 	} while (lastNamesLength !== names.length);
 
@@ -104,7 +104,7 @@ function degenerator(
 				const delegate = false;
 				const {
 					name,
-					parent: { node: pNode }
+					parent: { node: pNode },
 				} = path;
 
 				const expr = b.awaitExpression(path.node, delegate);
@@ -117,7 +117,7 @@ function degenerator(
 			}
 
 			this.traverse(path);
-		}
+		},
 	});
 
 	return generate(ast);
@@ -126,8 +126,7 @@ function degenerator(
 namespace degenerator {
 	export type DegeneratorName = string | RegExp;
 	export type DegeneratorNames = DegeneratorName[];
-	export interface CompileOptions
-		extends RunningScriptOptions {
+	export interface CompileOptions extends RunningScriptOptions {
 		sandbox?: Context;
 	}
 	export function compile<R, A extends any[] = []>(
@@ -147,7 +146,7 @@ namespace degenerator {
 				`Expected a "function" to be returned for \`${returnName}\`, but got "${typeof fn}"`
 			);
 		}
-		const r = function(this: any, ...args: A): Promise<R> {
+		const r = function (this: any, ...args: A): Promise<R> {
 			try {
 				const p = fn.apply(this, args);
 				if (typeof p.then === 'function') {
@@ -160,7 +159,7 @@ namespace degenerator {
 		};
 		Object.defineProperty(r, 'toString', {
 			value: fn.toString.bind(fn),
-			enumerable: false
+			enumerable: false,
 		});
 		return r;
 	}

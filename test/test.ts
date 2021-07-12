@@ -70,14 +70,9 @@ describe('degenerator()', () => {
 			function aPlusB(v: string): string {
 				return a(v) + b();
 			}
-			const fn = compile<string, [string]>(
-				'' + aPlusB,
-				'aPlusB',
-				['a'],
-				{
-					sandbox: { a, b },
-				}
-			);
+			const fn = compile<string, [string]>('' + aPlusB, 'aPlusB', ['a'], {
+				sandbox: { a, b },
+			});
 			const val = await fn('c');
 			assert.equal(val, 'cb');
 		});
@@ -121,14 +116,9 @@ describe('degenerator()', () => {
 			function aPlusB(): string {
 				return a() + b();
 			}
-			const fn = compile<string>(
-				'' + aPlusB,
-				'aPlusB',
-				[],
-				{
-					sandbox: { a, b },
-				}
-			);
+			const fn = compile<string>('' + aPlusB, 'aPlusB', [], {
+				sandbox: { a, b },
+			});
 			return fn().then((val: string) => {
 				assert.equal(val, 'ab');
 			});
@@ -162,12 +152,9 @@ describe('degenerator()', () => {
 			function b() {
 				return false;
 			}
-			const fn = compile<string>(
-				`${ifA};${a}`,
-				'ifA',
-				['b'],
-				{ sandbox: { b } }
-			);
+			const fn = compile<string>(`${ifA};${a}`, 'ifA', ['b'], {
+				sandbox: { b },
+			});
 			return fn().then((val: string) => {
 				assert.equal(val, 'foo');
 			});
