@@ -147,7 +147,7 @@ namespace degenerator {
 		const r = function (this: any, ...args: A): Promise<R> {
 			try {
 				const p = fn.apply(this, args);
-				if (typeof p.then === 'function') {
+				if (typeof p?.then === 'function') {
 					return p;
 				}
 				return Promise.resolve(p);

@@ -136,7 +136,7 @@ describe('degenerator()', () => {
 				'Expected a "function" to be returned for `foo`, but got "number"'
 			);
 		});
-		it('should be compile if branches', () => {
+		it('should compile if branches', () => {
 			function ifA(): string {
 				if (a()) {
 					return 'foo';
@@ -172,6 +172,13 @@ describe('degenerator()', () => {
 				err = _err;
 			}
 			assert.equal(err.message,'process is not defined')
+		});
+		it('should allow to return synchronous undefined', () => {
+			function u() {}
+			const fn = compile(`${u}`, 'u', ['']);
+			return fn().then(val => {
+				assert.strictEqual(val, undefined);
+			});
 		});
 	});
 });
