@@ -1,3 +1,3 @@
-function* foo() {
-    return (yield a('bar')) || (yield b());
+async function foo() {
+    return await a('bar') || await b();
 }

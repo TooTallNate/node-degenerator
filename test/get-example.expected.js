@@ -1,7 +1,7 @@
-function* myFn() {
-    var one = yield get('https://google.com');
-    var two = yield get('http://nodejs.org');
-    var three = JSON.parse(yield get('http://jsonip.org'));
+async function myFn() {
+    var one = await get('https://google.com');
+    var two = await get('http://nodejs.org');
+    var three = JSON.parse(await get('http://jsonip.org'));
     return [
         one,
         two,

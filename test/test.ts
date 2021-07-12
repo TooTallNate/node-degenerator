@@ -1,69 +1,34 @@
 import fs from 'fs';
 import path from 'path';
 import assert from 'assert';
-import degenerator, { compile, supportsAsync } from '../src';
+import degenerator, { compile } from '../src';
 
 describe('degenerator()', () => {
-	describe('`supportsAsync`', () => {
-		it('should export boolean `supportsAsync`', () => {
-			assert.equal(typeof supportsAsync, 'boolean');
-		});
+	it('should support "async" output functions', () => {
+		function aPlusB(a: () => string, b: () => string): string {
+			return a() + b();
+		}
+		const compiled = degenerator('' + aPlusB, ['a']);
+		assert.equal(
+			compiled.replace(/\s+/g, ' '),
+			'async function aPlusB(a, b) { return await a() + b(); }'
+		);
 	});
-
-	describe('"async" output', () => {
-		it('should support "async" output functions', () => {
-			function aPlusB(a: () => string, b: () => string): string {
-				return a() + b();
-			}
-			const compiled = degenerator('' + aPlusB, ['a'], {
-				output: 'async'
-			});
-			assert.equal(
-				compiled.replace(/\s+/g, ' '),
-				'async function aPlusB(a, b) { return await a() + b(); }'
-			);
-		});
-		it('should be the default "output" mode (with options)', () => {
-			function foo(a: () => string): string {
-				return a();
-			}
-			const compiled = degenerator('' + foo, ['a'], {});
-			assert.equal(
-				compiled.replace(/\s+/g, ' '),
-				'async function foo(a) { return await a(); }'
-			);
-		});
-		it('should be the default "output" mode (without options)', () => {
-			function foo(a: () => string): string {
-				return a();
-			}
-			const compiled = degenerator('' + foo, ['a']);
-			assert.equal(
-				compiled.replace(/\s+/g, ' '),
-				'async function foo(a) { return await a(); }'
-			);
-		});
-	});
-
-	describe('"generator" output', () => {
-		it('should support "generator" output functions', () => {
-			function aPlusB(a: () => string, b: () => string): string {
-				return a() + b();
-			}
-			const compiled = degenerator('' + aPlusB, ['a'], {
-				output: 'generator'
-			});
-			assert.equal(
-				compiled.replace(/\s+/g, ' '),
-				'function* aPlusB(a, b) { return (yield a()) + b(); }'
-			);
-		});
+	it('should be the default "output" mode (without options)', () => {
+		function foo(a: () => string): string {
+			return a();
+		}
+		const compiled = degenerator('' + foo, ['a']);
+		assert.equal(
+			compiled.replace(/\s+/g, ' '),
+			'async function foo(a) { return await a(); }'
+		);
 	});
 
 	describe('"expected" fixture tests', () => {
 		fs.readdirSync(__dirname)
 			.sort()
-			.forEach(n => {
+			.forEach((n) => {
 				if (n === 'test.js') return;
 				if (/\.expected\.js$/.test(n)) return;
 				if (/\.ts$/.test(n)) return;
@@ -71,7 +36,7 @@ describe('degenerator()', () => {
 
 				const expectedName = `${path.basename(n, '.js')}.expected.js`;
 
-				it(`${n} → ${expectedName}`, function() {
+				it(`${n} → ${expectedName}`, function () {
 					const sourceName = path.resolve(__dirname, n);
 					const compiledName = path.resolve(__dirname, expectedName);
 					const js = fs.readFileSync(sourceName, 'utf8');
@@ -89,9 +54,7 @@ describe('degenerator()', () => {
 						names = [/.*/];
 					}
 
-					const compiled = degenerator(js, names, {
-						output: 'generator'
-					});
+					const compiled = degenerator(js, names);
 					assert.equal(
 						compiled.trim().replace(/\r/g, ''),
 						expected.trim().replace(/\r/g, '')
@@ -101,23 +64,17 @@ describe('degenerator()', () => {
 	});
 
 	describe('`compile()`', () => {
-		it('should compile code into an invocable async function', () => {
+		it('should compile code into an invocable async function', async () => {
 			const a = (v: string) => Promise.resolve(v);
 			const b = () => 'b';
 			function aPlusB(v: string): string {
 				return a(v) + b();
 			}
-			const fn = compile<(v: string) => Promise<string>>(
-				'' + aPlusB,
-				'aPlusB',
-				['a'],
-				{
-					sandbox: { a, b }
-				}
-			);
-			return fn('c').then((val: string) => {
-				assert.equal(val, 'cb');
+			const fn = compile<string, [string]>('' + aPlusB, 'aPlusB', ['a'], {
+				sandbox: { a, b },
 			});
+			const val = await fn('c');
+			assert.equal(val, 'cb');
 		});
 		it('should contain the compiled code in `toString()` output', () => {
 			const a = () => 'a';
@@ -130,14 +87,10 @@ describe('degenerator()', () => {
 				'aPlusB',
 				['b'],
 				{
-					sandbox: { a, b }
+					sandbox: { a, b },
 				}
 			);
-			if (supportsAsync) {
-				assert(/await b\(\)/.test(fn + ''));
-			} else {
-				assert(/yield b\(\)/.test(fn + ''));
-			}
+			assert(/await b\(\)/.test(fn + ''));
 		});
 		it('should be able to await non-promises', () => {
 			const a = () => 'a';
@@ -150,10 +103,10 @@ describe('degenerator()', () => {
 				'aPlusB',
 				['a'],
 				{
-					sandbox: { a, b }
+					sandbox: { a, b },
 				}
 			);
-			return fn().then((val: string) => {
+			return fn().then((val) => {
 				assert.equal(val, 'ab');
 			});
 		});
@@ -163,14 +116,9 @@ describe('degenerator()', () => {
 			function aPlusB(): string {
 				return a() + b();
 			}
-			const fn = compile<() => Promise<string>>(
-				'' + aPlusB,
-				'aPlusB',
-				[],
-				{
-					sandbox: { a, b }
-				}
-			);
+			const fn = compile<string>('' + aPlusB, 'aPlusB', [], {
+				sandbox: { a, b },
+			});
 			return fn().then((val: string) => {
 				assert.equal(val, 'ab');
 			});
@@ -204,12 +152,9 @@ describe('degenerator()', () => {
 			function b() {
 				return false;
 			}
-			const fn = compile<() => Promise<string>>(
-				`${ifA};${a}`,
-				'ifA',
-				['b'],
-				{ sandbox: { b } }
-			);
+			const fn = compile<string>(`${ifA};${a}`, 'ifA', ['b'], {
+				sandbox: { b },
+			});
 			return fn().then((val: string) => {
 				assert.equal(val, 'foo');
 			});
