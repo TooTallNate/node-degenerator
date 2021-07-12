@@ -3,7 +3,7 @@ import { generate } from 'escodegen';
 import { parseScript } from 'esprima';
 import { visit, namedTypes as n, builders as b } from 'ast-types';
 import { Context, RunningScriptOptions } from 'vm';
-import { VM } from 'vm2';
+import { VM, VMScript } from 'vm2';
 
 /**
  * Compiles sync JavaScript code into JavaScript with async Functions.
@@ -138,7 +138,10 @@ namespace degenerator {
 	): (...args: A) => Promise<R> {
 		const compiled = degenerator(code, names);
 		const vm = new VM(options);
-		const fn = vm.run(`${compiled};${returnName}`);
+		const script = new VMScript(`${compiled};${returnName}`, {
+			filename: options.filename,
+		});
+		const fn = vm.run(script);
 		if (typeof fn !== 'function') {
 			throw new Error(
 				`Expected a "function" to be returned for \`${returnName}\`, but got "${typeof fn}"`

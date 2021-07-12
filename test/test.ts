@@ -159,26 +159,42 @@ describe('degenerator()', () => {
 				assert.equal(val, 'foo');
 			});
 		});
-		it('should prevent privilege escalation of untrusted code', async() => {
+		it('should prevent privilege escalation of untrusted code', async () => {
 			let err;
 			try {
 				const fn = compile<typeof process>(
 					`const f = this.constructor.constructor('return process');`,
 					'f',
-					[],
+					[]
 				);
 				await fn();
-			} catch(_err) {
+			} catch (_err) {
 				err = _err;
 			}
-			assert.equal(err.message,'process is not defined')
+			assert.equal(err.message, 'process is not defined');
 		});
 		it('should allow to return synchronous undefined', () => {
 			function u() {}
 			const fn = compile(`${u}`, 'u', ['']);
-			return fn().then(val => {
+			return fn().then((val) => {
 				assert.strictEqual(val, undefined);
 			});
+		});
+		it('should support "filename" option', async () => {
+			function u() {
+				throw new Error('fail');
+			}
+			let err;
+			const fn = compile(`${u}`, 'u', [''], {
+				filename: '/foo/bar/baz.js',
+			});
+			try {
+				await fn();
+			} catch (_err) {
+				err = _err;
+			}
+			assert.strictEqual(err.message, 'fail');
+			assert(err.stack.includes('at u (/foo/bar/baz.js:'));
 		});
 	});
 });
