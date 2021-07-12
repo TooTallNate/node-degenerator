@@ -101,7 +101,7 @@ describe('degenerator()', () => {
 	});
 
 	describe('`compile()`', () => {
-		it('should compile code into an invocable async function', () => {
+		it('should compile code into an invocable async function', async () => {
 			const a = (v: string) => Promise.resolve(v);
 			const b = () => 'b';
 			function aPlusB(v: string): string {
@@ -115,9 +115,8 @@ describe('degenerator()', () => {
 					sandbox: { a, b }
 				}
 			);
-			return fn('c').then((val: string) => {
-				assert.equal(val, 'cb');
-			});
+			const val = await fn('c');
+			assert.equal(val, 'cb');
 		});
 		it('should contain the compiled code in `toString()` output', () => {
 			const a = () => 'a';
@@ -213,6 +212,20 @@ describe('degenerator()', () => {
 			return fn().then((val: string) => {
 				assert.equal(val, 'foo');
 			});
+		});
+		it('should not allow privilege escalation of untrusted code', async() => {
+			let err;
+			try {
+				const fn = compile<() => Promise<any>>(
+					`const f = this.constructor.constructor('return process');`,
+					'f',
+					[],
+				);
+				await fn();
+			} catch(_err) {
+				err = _err;
+			}
+			assert.equal(err.message,'process is not defined')
 		});
 	});
 });

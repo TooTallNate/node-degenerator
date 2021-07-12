@@ -1,8 +1,9 @@
-import { isRegExp } from 'util';
+import { types } from 'util';
 import { generate } from 'escodegen';
 import { parseScript } from 'esprima';
 import { visit, namedTypes as n, builders as b } from 'ast-types';
-import { Context, RunningScriptOptions, runInNewContext } from 'vm';
+import { Context, RunningScriptOptions } from 'vm';
+import { VM } from 'vm2';
 
 import _supportsAsync from './supports-async';
 import generatorToPromiseFn from './generator-to-promise';
@@ -161,10 +162,9 @@ namespace degenerator {
 	): T {
 		const output = _supportsAsync ? 'async' : 'generator';
 		const compiled = degenerator(code, names, { ...options, output });
-		const fn = runInNewContext(
+		const vm = new VM(options);
+		const fn = vm.run(
 			`${compiled};${returnName}`,
-			options.sandbox,
-			options
 		);
 		if (typeof fn !== 'function') {
 			throw new Error(
@@ -230,7 +230,7 @@ function checkName(name: string, names: degenerator.DegeneratorNames): boolean {
 	// now that we have the `name`, check if any entries match in the `names` array
 	for (let i = 0; i < names.length; i++) {
 		const n = names[i];
-		if (isRegExp(n)) {
+		if (types.isRegExp(n)) {
 			if (n.test(name)) {
 				return true;
 			}
