@@ -159,5 +159,19 @@ describe('degenerator()', () => {
 				assert.equal(val, 'foo');
 			});
 		});
+		it('should prevent privilege escalation of untrusted code', async() => {
+			let err;
+			try {
+				const fn = compile<typeof process>(
+					`const f = this.constructor.constructor('return process');`,
+					'f',
+					[],
+				);
+				await fn();
+			} catch(_err) {
+				err = _err;
+			}
+			assert.equal(err.message,'process is not defined')
+		});
 	});
 });
