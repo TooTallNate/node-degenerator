@@ -130,7 +130,7 @@ namespace degenerator {
 	export interface CompileOptions extends RunningScriptOptions {
 		sandbox?: Context;
 	}
-	export function compile<R, A extends any[] = []>(
+	export function compile<R = any, A extends any[] = []>(
 		code: string,
 		returnName: string,
 		names: DegeneratorNames,
