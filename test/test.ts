@@ -213,7 +213,7 @@ describe('degenerator()', () => {
 				assert.equal(val, 'foo');
 			});
 		});
-		it('should not allow privilege escalation of untrusted code', async() => {
+		it('should prevent privilege escalation of untrusted code', async() => {
 			let err;
 			try {
 				const fn = compile<() => Promise<any>>(
