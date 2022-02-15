@@ -28,7 +28,7 @@
     "ast-types": "^0.13.2",
     "escodegen": "^1.8.1",
     "esprima": "^4.0.0",
-    "vm2": "^3.9.3"
+    "vm2": "^3.9.7"
   },
   "devDependencies": {
     "@types/escodegen": "^0.0.6",
