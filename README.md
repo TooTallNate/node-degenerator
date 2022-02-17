@@ -97,16 +97,9 @@ asyncFn().then((res) => {
 API
 ---
 
-### degenerator(code: string, names: Array<string|RegExp>, options?: DegeneratorOptions): String
+### degenerator(code: string, names: Array<string|RegExp>): String
 
 Returns a "degeneratorified" JavaScript string, with `async`/`await` transplanted.
-
-#### DegeneratorOptions
-
-An options object _may_ be passed in as the third parameter, with the following
-values:
-
- * `output` - string - May be `"async"` or `"generator"`, defaults to `"async"`.
 
 
 License
