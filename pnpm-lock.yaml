@@ -21,13 +21,13 @@ specifiers:
   mocha: ^6.2.0
   rimraf: ^3.0.0
   typescript: ^3.7.3
-  vm2: ^3.9.15
+  vm2: ^3.9.16
 
 dependencies:
   ast-types: 0.13.4
   escodegen: 1.14.3
   esprima: 4.0.1
-  vm2: 3.9.15
+  vm2: 3.9.16
 
 devDependencies:
   '@types/escodegen': 0.0.6
@@ -873,8 +873,8 @@ packages:
     resolution: {integrity: sha512-gozW2blMLJCeFpBwugLTGyvVjNoeo1knonXAcatC6bjPBZitotxdWf7Gimr25N4c0AAOo4eOUfaG82IJPDpqCA==}
     dependencies:
       debug: 3.2.7
-      is-core-module: 2.11.0
-      resolve: 1.22.1
+      is-core-module: 2.12.0
+      resolve: 1.22.3
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -888,7 +888,7 @@ packages:
       debug: 4.3.4
       eslint: 5.16.0
       eslint-plugin-import: 2.16.0_3ygjlbxfpqm7wkavebglz2toku
-      resolve: 1.22.1
+      resolve: 1.22.3
       tsconfig-paths: 3.14.2
     transitivePeerDependencies:
       - supports-color
@@ -945,7 +945,7 @@ packages:
       lodash: 4.17.21
       minimatch: 3.1.2
       read-pkg-up: 2.0.0
-      resolve: 1.22.1
+      resolve: 1.22.3
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
@@ -982,7 +982,7 @@ packages:
       jsx-ast-utils: 2.4.1
       object.fromentries: 2.0.6
       prop-types: 15.8.1
-      resolve: 1.22.1
+      resolve: 1.22.3
     dev: true
 
   /eslint-scope/4.0.3:
@@ -1582,8 +1582,8 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /is-core-module/2.11.0:
-    resolution: {integrity: sha512-RRjxlvLDkD1YJwDbroBHMb+cukurkDWNyHx7D3oNB5x9rb5ogcksMC5wHCadcXoo67gVr/+3GFySh3134zi6rw==}
+  /is-core-module/2.12.0:
+    resolution: {integrity: sha512-RECHCBCd/viahWmwj6enj19sKbHfJrddi/6cBDsNTKbNq0f7VeaUkBo60BqzvPqo/W54ChS62Z5qyun7cfOMqQ==}
     dependencies:
       has: 1.0.3
     dev: true
@@ -2123,7 +2123,7 @@ packages:
     resolution: {integrity: sha512-/5CMN3T0R4XTj4DcGaexo+roZSdSFW/0AOOTROrjxzCG1wrWXEsGbRKevjlIL+ZDE4sZlJr5ED4YW0yqmkK+eA==}
     dependencies:
       hosted-git-info: 2.8.9
-      resolve: 1.22.1
+      resolve: 1.22.3
       semver: 5.7.1
       validate-npm-package-license: 3.0.4
     dev: true
@@ -2497,11 +2497,11 @@ packages:
     deprecated: https://github.com/lydell/resolve-url#deprecated
     dev: true
 
-  /resolve/1.22.1:
-    resolution: {integrity: sha512-nBpuuYuY5jFsli/JIs1oldw6fOQCBioohqWZg/2hiaOybXOft4lonv85uDOKXdf8rhyK159cxU5cDcK/NKk8zw==}
+  /resolve/1.22.3:
+    resolution: {integrity: sha512-P8ur/gp/AmbEzjr729bZnLjXK5Z+4P0zhIJgBgzqRih7hL7BOukHGtSTA3ACMY467GRFz3duQsi0bDZdR7DKdw==}
     hasBin: true
     dependencies:
-      is-core-module: 2.11.0
+      is-core-module: 2.12.0
       path-parse: 1.0.7
       supports-preserve-symlinks-flag: 1.0.0
     dev: true
@@ -2972,8 +2972,8 @@ packages:
       spdx-expression-parse: 3.0.1
     dev: true
 
-  /vm2/3.9.15:
-    resolution: {integrity: sha512-XqNqknHGw2avJo13gbIwLNZUumvrSHc9mLqoadFZTpo3KaNEJoe1I0lqTFhRXmXD7WkLyG01aaraXdXT0pa4ag==}
+  /vm2/3.9.16:
+    resolution: {integrity: sha512-3T9LscojNTxdOyG+e8gFeyBXkMlOBYDoF6dqZbj+MPVHi9x10UfiTAJIobuchRCp3QvC+inybTbMJIUrLsig0w==}
     engines: {node: '>=6.0'}
     hasBin: true
     dependencies:
