@@ -21,13 +21,13 @@ specifiers:
   mocha: ^6.2.0
   rimraf: ^3.0.0
   typescript: ^3.7.3
-  vm2: ^3.9.11
+  vm2: ^3.9.17
 
 dependencies:
   ast-types: 0.13.4
   escodegen: 1.14.3
   esprima: 4.0.1
-  vm2: 3.9.14
+  vm2: 3.9.17
 
 devDependencies:
   '@types/escodegen': 0.0.6
@@ -2972,8 +2972,8 @@ packages:
       spdx-expression-parse: 3.0.1
     dev: true
 
-  /vm2/3.9.14:
-    resolution: {integrity: sha512-HgvPHYHeQy8+QhzlFryvSteA4uQLBCOub02mgqdR+0bN/akRZ48TGB1v0aCv7ksyc0HXx16AZtMHKS38alc6TA==}
+  /vm2/3.9.17:
+    resolution: {integrity: sha512-AqwtCnZ/ERcX+AVj9vUsphY56YANXxRuqMb7GsDtAr0m0PcQX3u0Aj3KWiXM0YAHy7i6JEeHrwOnwXbGYgRpAw==}
     engines: {node: '>=6.0'}
     hasBin: true
     dependencies:
